@@ -2,9 +2,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 )
 
 func main() {
-	fmt.Println(s)
+	flag.Parse()
+	args := flag.Args()
+	fmt.Println(args)
 }

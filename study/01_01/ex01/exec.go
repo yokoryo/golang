@@ -3,14 +3,13 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"os/exec"
 )
 
 func main() {
-	var s, sep string
-	for i := 0; i < len(os.Args); i++ { // os.Args[0]は0番目の要素には実行したコマンド名が格納されため
-		s += sep + os.Args[i] // s = s + sep + os.Args[i]と同じ
-		sep = " "
+	out, err := exec.Command("ls", "-la").Output()	//cmd.Output()は標準出力を表示させる
+	if err != nil {
+		fmt.Println("Command exec error")
 	}
-	fmt.Println(s)
+		fmt.Printf(string(out))
 }
