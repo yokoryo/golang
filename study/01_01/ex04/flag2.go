@@ -4,23 +4,22 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
 func main() {
-	var (
-		cmd = flag.String("c", "default", "string flag")
-		opt = flag.String("o", "default", "string flag")
-	)
+	opt := flag.String("o", "ps", "option")
 	flag.Parse()
-	fmt.Println("cmd:", *cmd)
-	fmt.Println("opt:", *opt)
 
-//	out, err := exec.Command("*cmd", "*opt").Output()
-	out := exec.Command(*cmd, *opt).Output()
-//		if err != nil {
-//		fmt.Println("Command exec error")
-//	}
-		fmt.Printf("string(out)")
+//	fmt.Println("opt: %s", *opt)
+
+	cmd := exec.Command("docker", *opt)
+	result, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+		fmt.Printf("出力結果: \n%s", result)
 }
 
