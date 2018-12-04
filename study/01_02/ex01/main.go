@@ -9,7 +9,7 @@ import (
 const BUFSIZE = 1024
 
 func main() {
-	file, err := os.Open("./sampleaa.txt")
+	file, err := os.Open("./sample.txt")
 	if err != nil {
 		fmt.Println("Open error")
 	}
