@@ -2,8 +2,30 @@
 package main
 
 import (
+	"fmt"
+	"os"
 )
 
-func main() {
-}
+const BUFSIZE = 1024
 
+func main() {
+	file, err := os.Open("./sampleaa.txt")
+	if err != nil {
+		fmt.Println("Open error")
+	}
+	defer file.Close()
+
+	put := make([]byte, BUFSIZE)
+	for {
+		num, err := file.Read(put)
+		if num == 0 {
+			break
+		}
+		if err != nil {
+			fmt.Println("Read error")
+			break
+		}
+
+		fmt.Println(string(put[:num]))
+	}
+}
