@@ -3,25 +3,34 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"encoding/json"
 	"io/ioutil"
+	"encoding/json"
 )
 
-typ Person struct {
-	id int 'json:"id"'
-	name string 'jdon:"name"'
-	age int 'json:"age"'
-	ability struct {
-		programing string 'json:"programing"'
-		operation string 'json:"operation"'
-	} 'json:"vivd_info"'
+type Person struct {
+	Id		int			`json:"id"`
+	Name	string	`json:"name"`
+	Age		int			`json:"age"`
+	Ability struct {
+		pro	string	`json:"pro"`
+		ope	string	`json:"ope"`
+	}
 }
 
 func main() {
-	func Unmarshal(data []byte, v interface{}) error
+	file, err := ioutil.ReadFile("./sample.json")
+	if err != nil {
+		fmt.Println("Open error")
+	}
+	
 	var persons []Person
+
+	if err := json.Unmarshal(file, persons); err != nil {
+		fmt.Printf("json unmarshal error")
+	}
+	
+
 	for _, p := range persons {
-		fmt.Printf("%d : %s : %s : %s : %s\n", p.ID, p.Name, p.Birthday, p.VividInfo.Color, p.VividInfo.Weapon)
+		fmt.Printf("%d : %s : %d : %s : %s\n", p.Id, p.Name, p.Age, p.Ability.pro, p.Ability.ope)
 	}
 }
