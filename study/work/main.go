@@ -2,15 +2,27 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"io"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe("localhost:8000", nil))
-}
+	res, err := http.Get("https://golang.org")
+	if err != nil {
+		fmt.Println("Request error:", err)
+		return
+	}
+	defer res.Body.Close()
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
+	buf := make([]byte, 256)
+	for {
+		n, err := res.Body.Read(buf)
+		if n == 0 || err == io.EOF {
+			break;
+		} else if err != nil {
+			fmt.Println("Read response body error:", err)
+			return
+		}
+		fmt.Println(string(buf[:n]))
+	}
 }
