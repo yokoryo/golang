@@ -1,3 +1,4 @@
+// [http://localhost:8000/hello]のときは「hello web server!」と表示
 package main
 
 import (

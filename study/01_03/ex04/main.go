@@ -1,4 +1,4 @@
-//URLを引数に指定し、その中身を表示
+//WEBページのhttpレスポンスコードを表示
 package main
 
 import (
@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"io/ioutil"
-)
+	)
 
 func main() {
 	//url := flag.String("url", "http://localhost:8000", "URL")
@@ -19,10 +18,10 @@ func main() {
 		log.Fatal(err)
 	}
 	defer res.Body.Close()
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf(string(body))
+	
+	status := res.StatusCode
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	fmt.Printf("%d\n", status)
 }
