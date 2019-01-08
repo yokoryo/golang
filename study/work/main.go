@@ -1,28 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"net/http"
+     "fmt"
+     "github.com/PuerkitoBio/goquery"
 )
 
-func main() {
-	res, err := http.Get("https://golang.org")
-	if err != nil {
-		fmt.Println("Request error:", err)
-		return
-	}
-	defer res.Body.Close()
+func GetPage(url string) {
+     doc, _ := goquery.NewDocument(url)
+     doc.Find("a").Each(func(_ int, s *goquery.Selection) {
+          url, _ := s.Attr("href")
+          fmt.Println(url)
+     })
+}
 
-	buf := make([]byte, 256)
-	for {
-		n, err := res.Body.Read(buf)
-		if n == 0 || err == io.EOF {
-			break;
-		} else if err != nil {
-			fmt.Println("Read response body error:", err)
-			return
-		}
-		fmt.Println(string(buf[:n]))
-	}
+func main() {
+     url := "http://qiita.com/advent-calendar/2013/"
+     GetPage(url)
 }
