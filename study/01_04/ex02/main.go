@@ -1,24 +1,30 @@
 package main
 
-//gogueryを使ってみた
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"github.com/PuerkitoBio/goquery"
-)
+	"time"
+	)
 
-func get(url string) {
-	doc, _ := goquery.NewDocument(url)
-	doc.Find("a").Each(func(_ int, s *goquery.Selection) {
-			 url, _ := s.Attr("href")
-			 fmt.Println(url)
-	})
+func query() {
+	res, err := http.Get("http://localhost:9999")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%q\n", body[:])
 }
 
 func main() {
 	fs := http.FileServer(http.Dir("public/"))
 	http.Handle("/", http.StripPrefix("/", fs))
-	http.ListenAndServe(":9999", nil)
-	url := "http://localhost:9999/"
-	get(url)
+	go http.ListenAndServe(":9999", nil)
+	go query()
+	time.Sleep(time.Second)
 }

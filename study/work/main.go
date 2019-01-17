@@ -1,19 +1,31 @@
 package main
 
 import (
-     "fmt"
-     "github.com/PuerkitoBio/goquery"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"time"
 )
 
-func GetPage(url string) {
-     doc, _ := goquery.NewDocument(url)
-     doc.Find("a").Each(func(_ int, s *goquery.Selection) {
-          url, _ := s.Attr("href")
-          fmt.Println(url)
-     })
+// URLを引数で指定し、実行する場合
+func cli() {
+	urlarg := flag.String("url", "https://github.com/n-guitar/go_study", "引数のURL書かないとか、まじか・・・")
+	flag.Parse()
+	req, _ := http.NewRequest("GET", *urlarg, nil)
+	client := new(http.Client)
+	resp, _ := client.Do(req)
+	defer resp.Body.Close()
+
+	html, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(html))
 }
 
 func main() {
-     url := "http://qiita.com/advent-calendar/2013/"
-     GetPage(url)
+	fs := http.FileServer(http.Dir("public/"))
+	http.Handle("/", http.StripPrefix("/", fs))
+
+	go http.ListenAndServe(":9999", nil)
+	go cli()
+	time.Sleep(3 * time.Second)
 }
