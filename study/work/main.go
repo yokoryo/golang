@@ -1,31 +1,44 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"net/http"
-	"time"
+	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
-// URLを引数で指定し、実行する場合
-func cli() {
-	urlarg := flag.String("url", "https://github.com/n-guitar/go_study", "引数のURL書かないとか、まじか・・・")
-	flag.Parse()
-	req, _ := http.NewRequest("GET", *urlarg, nil)
-	client := new(http.Client)
-	resp, _ := client.Do(req)
-	defer resp.Body.Close()
-
-	html, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(html))
-}
-
 func main() {
-	fs := http.FileServer(http.Dir("public/"))
-	http.Handle("/", http.StripPrefix("/", fs))
 
-	go http.ListenAndServe(":9999", nil)
-	go cli()
-	time.Sleep(3 * time.Second)
+	//local = "http://localhost:9999/gittrend.html"
+	url := "https://github.com/trending"
+	res, err := http.Get(url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
+	}
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var repo_names []string
+	doc.Find(".repo-list h3 a").Each(func(_ int, s *goquery.Selection) {
+		repo_names = append(repo_names, strings.Join(strings.Fields(s.Text()), " "))
+	})
+
+	var stars []string
+	doc.Find(".repo-list span.float-sm-right").Each(func(_ int, s *goquery.Selection) {
+		stars = append(stars, strings.Join(strings.Fields(s.Text()), " "))
+	})
+
+	for i := 0; i < len(stars) && i < 10; i++ {
+		fmt.Println(repo_names[i] + "　　→　　" + stars[i])
+	}
+
 }
