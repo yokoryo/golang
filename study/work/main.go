@@ -2,43 +2,27 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 func main() {
-
-	//local = "http://localhost:9999/gittrend.html"
-	url := "https://github.com/trending"
-	res, err := http.Get(url)
+	doc, err := goquery.NewDocument("https://github.com/trending?since=daily")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Print("url scarapping failed")
 	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", res.StatusCode, res.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var repo_names []string
-	doc.Find(".repo-list h3 a").Each(func(_ int, s *goquery.Selection) {
-		repo_names = append(repo_names, strings.Join(strings.Fields(s.Text()), " "))
+	var rankCount = 0
+	doc.Find("ol > li ").Each(func(_ int, s *goquery.Selection) {
+		url := s.Children().Find("a")
+		star := s.Children().Find("span.float-sm-right")
+		rankName, _ := url.Attr("href")
+		rankText := star.Text()
+		var rankNumber []string
+		rankNumber = strings.Fields(rankText)
+		rankCount++
+		if 10 >= rankCount {
+			fmt.Printf("%d位\t スター数:%s\t リポジトリ名：https://github.com%s\n", rankCount, rankNumber[0], rankName)
+		}
 	})
-
-	var stars []string
-	doc.Find(".repo-list span.float-sm-right").Each(func(_ int, s *goquery.Selection) {
-		stars = append(stars, strings.Join(strings.Fields(s.Text()), " "))
-	})
-
-	for i := 0; i < len(stars) && i < 10; i++ {
-		fmt.Println(repo_names[i] + "　　→　　" + stars[i])
-	}
-
 }
