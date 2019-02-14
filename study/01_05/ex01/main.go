@@ -7,7 +7,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-
 func main() {
 	//接続
 	//db, err := sql.Open("mysql", "go_user:@go_apps")
